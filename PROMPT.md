@@ -6,6 +6,19 @@
 
 ## Как ИИ читает файлы проекта
 
+
+### Важно: jsDelivr кэширует файлы
+jsDelivr CDN кэширует файлы GitHub на 24 часа. После push на GitHub новые файлы могут не отображаться сразу.
+
+**Решения:**
+1. Подождите 10-30 минут после push
+2. Используйте параметр очистки кэша: `?nocache=1`
+3. Проверяйте через GitHub Web: `https://github.com/yachtsman13/Lifteam/blob/main/...`
+4. Используйте raw.githubusercontent.com (если доступен)
+
+**Проверка актуальности:**
+Сравните `v2.X` в заголовке файла с версией в репозитории. Если версия отличается — файл закэширован.
+
 ### jsDelivr CDN (основной способ)
 jsDelivr предоставляет прямой доступ к файлам GitHub-репозитория через CDN:
 
@@ -19,7 +32,7 @@ https://cdn.jsdelivr.net/gh/yachtsman13/Lifteam@main/<путь_к_файлу>
 - Если файл удалён — автоматически fallback на предыдущую версию
 - Поддерживает директиву `@main` для последнего коммита ветки main
 - Для конкретного коммита: `@<commit_hash>`
-- Для тега: `@v2.5`
+- Для тега: `@v2.5.1`
 
 **Примеры URL:**
 ```
@@ -97,7 +110,7 @@ git bundle unbundle ../lifteam-vX.X.X.bundle
 ```
 
 ## Текущая версия
-v2.5 — standalone (SQLite) + Docker (PostgreSQL + Redis + Nginx)
+v2.5.1 — standalone (SQLite) + Docker (PostgreSQL + Redis + Nginx)
 
 ## Стек
 Python 3.12, Django 5.1, DRF 3.17, Bootstrap 5, vanilla JS

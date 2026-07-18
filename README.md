@@ -1,4 +1,4 @@
-# LiftTeam v2.5
+# LiftTeam v2.5.1.1
 
 Система управления заказами на ремонт лифтов и складом радиодеталей.
 
@@ -40,7 +40,7 @@ cd ~/Downloads/Lifteam
 cd %USERPROFILE%\Downloads
 mkdir Lifteam
 cd Lifteam
-git clone ..\lifteam-v2.5.bundle .
+git clone ..\lifteam-v2.5.1.bundle .
 python lifteam_launcher.py
 ```
 
@@ -48,7 +48,7 @@ python lifteam_launcher.py
 ```bash
 cd ~/Downloads
 mkdir Lifteam && cd Lifteam
-git clone ../lifteam-v2.5.bundle .
+git clone ../lifteam-v2.5.1.bundle .
 python3 lifteam_launcher.py
 ```
 
@@ -67,3 +67,8 @@ git remote set-url origin https://github.com/yachtsman13/Lifteam.git
 
 ## Автор
 yachtsman13 — https://github.com/yachtsman13/Lifteam
+
+
+## Примечание: jsDelivr кэширование
+После push на GitHub jsDelivr CDN может показывать старые файлы до 24 часов.
+Проверяйте актуальность кода через GitHub Web: https://github.com/yachtsman13/Lifteam
