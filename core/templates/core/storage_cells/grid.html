@@ -1,0 +1,81 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Кассетницы — LiftTeam v2.2{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cell-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; max-width: 500px; margin: 0 auto; }
+    .cell-item { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+    .cell-item.free { background: #e9ecef; color: #6c757d; }
+    .cell-item.normal { background: #d1e7dd; color: #0f5132; }
+    .cell-item.low_stock { background: #f8d7da; color: #842029; }
+    .cell-item.selected { background: #0d6efd !important; color: #fff !important; border-color: #0a58ca; }
+    .cell-item:hover { transform: scale(1.15); box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10; }
+    .row-label { font-weight: bold; color: #6c757d; text-align: center; padding: 8px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-grid-3x3 me-2"></i>Кассетница №{{ cabinet }}</h2>
+    <div class="d-flex gap-2">
+        <select class="form-select" onchange="window.location.href='?cabinet='+this.value{% if selected_part %}+'&selected_part={{ selected_part.pk }}'{% endif %}">
+            {% for c in cabinet_range %}
+            <option value="{{ c }}" {% if cabinet == c %}selected{% endif %}>Кассетница {{ c }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-select" onchange="window.location.href='?cabinet={{ cabinet }}&selected_part='+this.value">
+            <option value="">Выбрать деталь...</option>
+            {% for p in parts %}
+            <option value="{{ p.pk }}" {% if selected_part == p %}selected{% endif %}>{{ p.part_number }} — {{ p.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-center gap-3 mb-3">
+            <span class="badge bg-secondary">Свободно</span>
+            <span class="badge bg-success">В норме</span>
+            <span class="badge bg-danger">Дефицит</span>
+            <span class="badge bg-primary">Выбрано</span>
+        </div>
+        <div class="cell-grid">
+            {% for row in grid %}
+                {% for cell in row %}
+                    {% if cell.exists %}
+                    <div class="cell-item {{ cell.status }}" title="{{ cell.cell.address }}{% if cell.cell.part %} — {{ cell.cell.part.name }} ({{ cell.cell.part.current_stock }}){% endif %}" onclick="selectCell({{ cell.cell.pk }})">
+                        {{ cell.cell.cell_row }}
+                    </div>
+                    {% else %}
+                    <div class="cell-item free" style="opacity:0.3">—</div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedCell = null;
+function selectCell(cellId) {
+    if (!selectedCell) {
+        selectedCell = cellId;
+        alert('Выбрана ячейка ' + cellId + '. Выберите целевую ячейку для перемещения.');
+    } else {
+        if (confirm('Переместить деталь?')) {
+            fetch('{% url "storage_cell_move" %}', {
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'from_cell=' + selectedCell + '&to_cell=' + cellId
+            }).then(r => r.json()).then(data => {
+                if (data.success) location.reload();
+                else alert(data.error);
+            });
+        }
+        selectedCell = null;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Этикетка {{ cell.address }} — LiftTeam v2.2{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h2>Этикетка ячейки</h2>
+    <h1 class="display-4 fw-bold">{{ cell.address }}</h1>
+    {% if cell.part %}
+    <p class="lead">{{ cell.part.part_number }} — {{ cell.part.name }}</p>
+    {% endif %}
+    {% if barcode_img %}
+    <img src="{{ barcode_img }}" alt="{{ cell.address }}" class="img-fluid" style="max-width: 300px;">
+    {% endif %}
+    <div class="mt-4">
+        <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer me-2"></i>Печать</button>
+        <a href="{% url 'storage_cell_grid' %}" class="btn btn-outline-secondary">Назад</a>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .sidebar, .btn, nav { display: none !important; }
+        .main-content { margin-left: 0 !important; }
+        body { background: white; }
+    }
+</style>
+{% endblock %}

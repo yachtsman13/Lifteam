@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Радиодетали — LiftTeam v2.2{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-cpu me-2"></i>Радиодетали</h2>
+    <a href="{% url 'part_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>Новая деталь</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" class="form-control" placeholder="Поиск..." value="{{ search }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="component_type" class="form-select" onchange="this.form.submit()">
+                    <option value="">Все типы</option>
+                    {% for ct in component_types %}
+                    <option value="{{ ct }}" {% if component_type == ct %}selected{% endif %}>{{ ct }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">Фильтр</button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Артикул</th>
+                        <th>Название</th>
+                        <th>Тип</th>
+                        <th>Остаток</th>
+                        <th>Мин.</th>
+                        <th>Ячейка</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for part in parts %}
+                    <tr class="{% if part.is_below_min_stock %}table-danger{% endif %}">
+                        <td class="fw-bold">{{ part.part_number }}</td>
+                        <td>{{ part.name }}</td>
+                        <td>{{ part.component_type|default:"—" }}</td>
+                        <td><span class="badge bg-{% if part.is_below_min_stock %}danger{% else %}success{% endif %}">{{ part.current_stock }}</span></td>
+                        <td>{{ part.min_stock }}</td>
+                        <td>{{ part.storage_cell.address|default:"—" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'part_detail' part.pk %}" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'part_edit' part.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                            <a href="{% url 'part_delete' part.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center text-muted py-4">Детали не найдены</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if parts.has_other_pages %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if parts.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ parts.previous_page_number }}&q={{ search }}&component_type={{ component_type }}">←</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ parts.number }} / {{ parts.paginator.num_pages }}</span></li>
+                {% if parts.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ parts.next_page_number }}&q={{ search }}&component_type={{ component_type }}">→</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
